@@ -6,6 +6,7 @@ if (!Authorization::baseUser()) {
 }
 
 require_once('includes/headers.php');
+require_once('includes/functions.php');
 
 header("Content-type: application/json");
 
@@ -30,10 +31,15 @@ if (is_file($filepath)) {
             exit(json_encode(['type' => 'file', 'extension' => 'css', 'content' => file_get_contents($filepath)]));
         case 'html':
             exit(json_encode(['type' => 'file', 'extension' => 'html', 'content' => file_get_contents($filepath)]));
-        case 'txt' || 'toml' || 'pem' || 'key':
-            exit (json_encode(['type' => 'file', 'extension' => 'text', 'content' => file_get_contents($filepath)]));
+        default:
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimetype = finfo_file($finfo, $filepath);
+            finfo_close($finfo);
+            if (strpos($mimetype, 'text') !== false) {
+                exit (json_encode(['type' => 'file', 'extension' => 'text', 'content' => file_get_contents($filepath)]));
+            }
+            exit (json_encode(['type' => 'not_viewable', 'extension' => $fileextension]));
     }
-    exit (json_encode(['type' => 'not_editable', 'extension' => $fileextension]));
 }
 
 if ($dir = scandir($filepath)) {

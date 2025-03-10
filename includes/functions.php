@@ -1,0 +1,95 @@
+<?php
+function zipFolder(ZipArchive $zip, String $filepath, String $zippath = ''): void {
+
+    if ($zippath === '') {
+        //keep the root of directory in the file structure of the zip
+        $dirlist = explode(DIRECTORY_SEPARATOR, $filepath);
+        $zippath = $dirlist[count($dirlist) - 1];
+    }
+
+    $files = scandir($filepath);
+
+    foreach ($files as $file) {
+        if ($file === '.' || $file === '..') {
+            continue;
+        }
+        if (is_dir ($filepath . DIRECTORY_SEPARATOR . $file)) {
+            zipFolder($zip, $filepath . DIRECTORY_SEPARATOR . basename($file), $zippath . DIRECTORY_SEPARATOR . $file);
+        } else {
+            $zip->addFile($filepath . DIRECTORY_SEPARATOR . $file, $zippath . DIRECTORY_SEPARATOR . basename($file));
+        }
+    }
+}
+
+function getLastFolder(String $currentpath) : String {
+    $currentpatharray = array_filter(explode(DIRECTORY_SEPARATOR, $currentpath));
+    $counter = 1;
+    $newfilepath = '..';
+    while ($counter < count($currentpatharray) - 2) {
+        $newfilepath .= DIRECTORY_SEPARATOR . $currentpatharray[$counter];
+        $counter++;
+    }
+    return $newfilepath;
+}
+
+function recursiveDelete(String $filepathparam) : bool {
+    if (is_file($filepathparam)) {
+        return unlink($filepathparam);
+    }
+    if (is_dir($filepathparam)) {
+        foreach(scandir($filepathparam) as $file) {
+            if ($file == '.' || $file == '..') {
+                continue;
+            }
+            recursiveDelete($filepathparam . DIRECTORY_SEPARATOR . $file);
+        }
+        return rmdir($filepathparam);
+    }
+    return false;
+}
+
+function copyDirectory(String $source, String $destination, bool $start = true) : bool {
+    //keep the root of the moved file in the structure
+    if ($start) {
+        $dirinsource = explode(DIRECTORY_SEPARATOR, $source);
+        $rootindest = $dirinsource[count($dirinsource) - 1];
+        $destination .= DIRECTORY_SEPARATOR . $rootindest;
+    }
+
+    if (!is_dir($destination)) {
+        mkdir($destination, 0777, true);
+    }
+
+    foreach (scandir($source) as $file) {
+        if ($file == '.' || $file == '..') {
+            continue;
+        }
+
+        $sourcePath = $source . DIRECTORY_SEPARATOR . $file;
+        $destinationPath = $destination . DIRECTORY_SEPARATOR . $file;
+
+        if (is_dir($sourcePath)) {
+            copyDirectory($sourcePath, $destinationPath, false);
+        } else {
+            copy($sourcePath, $destinationPath);
+        }
+    }
+    return true;
+}
+
+function moveFile(String $source, String $destination) : bool {
+    if (!file_exists($source)) {
+        return false;
+    }
+    if (is_file($source)) {
+        copy($source, $destination . DIRECTORY_SEPARATOR . basename($source));
+        unlink($source);
+        return true;
+    }
+    if (copyDirectory($source, $destination)) {
+        if (recursiveDelete($source)) {
+            return true;
+        }
+    }
+    return false;
+}
