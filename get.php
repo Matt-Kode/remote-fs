@@ -10,7 +10,7 @@ require_once('includes/functions.php');
 
 header("Content-type: application/json");
 
-$filepath = '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);;
+$filepath = '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);
 
 if (is_file($filepath)) {
     $fileextension = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
@@ -35,7 +35,7 @@ if (is_file($filepath)) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mimetype = finfo_file($finfo, $filepath);
             finfo_close($finfo);
-            if (strpos($mimetype, 'text') !== false) {
+            if (strpos($mimetype, 'text') !== false || $mimetype === 'application/x-empty') {
                 exit (json_encode(['type' => 'file', 'extension' => 'text', 'content' => file_get_contents($filepath)]));
             }
             exit (json_encode(['type' => 'not_viewable', 'extension' => $fileextension]));

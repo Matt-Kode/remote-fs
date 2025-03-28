@@ -9,9 +9,9 @@ Class Authorization {
 
         $token = explode(' ', $_SERVER['HTTP_AUTHORIZATION'])[1];
 
-        list($api_key, $permission, $signature) = explode(".", $token);
+        list($api_key, $id, $signature) = explode(".", $token);
 
-        $calculated_signature = hash_hmac('sha256', $api_key . '.' . $permission, SECRET_KEY);
+        $calculated_signature = hash_hmac('sha256', $api_key . '.' . $id, SECRET_KEY);
 
         if (hash_equals($signature, $calculated_signature) && $api_key == API_KEY) {
             return true;

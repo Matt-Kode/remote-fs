@@ -78,7 +78,7 @@ function copyDirectory(String $source, String $destination, bool $start = true) 
 }
 
 function moveFile(String $source, String $destination) : bool {
-    if (!file_exists($source)) {
+    if (!file_exists($source) || !file_exists($destination)) {
         return false;
     }
     if (is_file($source)) {
