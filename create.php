@@ -18,16 +18,18 @@ if ($filetype === 'dir') {
     if (is_dir($filepath . DIRECTORY_SEPARATOR . $filename)) {
         exit(json_encode(['type' => 'error', 'content' => 'Directory already exists']));
     }
-    mkdir($filepath .DIRECTORY_SEPARATOR . $filename, 0777, true);
-    exit(json_encode(['type' => 'success', 'content' => 'Directory created successfully']));
+    if (mkdir($filepath .DIRECTORY_SEPARATOR . $filename, 0777, true)) {
+        exit(json_encode(['type' => 'success', 'content' => 'Directory created successfully']));
+    }
 }
 
 if ($filetype === 'file') {
     if (is_file($filepath .DIRECTORY_SEPARATOR . $filename)) {
         exit(json_encode(['type' => 'error', 'content' => 'File already exists']));
     }
-    file_put_contents($filepath . DIRECTORY_SEPARATOR .$filename, "");
-    exit(json_encode(['type' => 'success', 'content' => 'File created successfully']));
+    if (file_put_contents($filepath . DIRECTORY_SEPARATOR .$filename, "")) {
+        exit(json_encode(['type' => 'success', 'content' => 'File created successfully']));
+    }
 }
 
 exit(json_encode(['type' => 'error', 'content' => 'Something went wrong']));
