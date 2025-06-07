@@ -20,6 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $destdir = '..' . str_replace('/', DIRECTORY_SEPARATOR, $_POST['filepath']);
 
+        if (!validatePath($destdir)) {
+            exit(json_encode(['type' => 'error', 'content' => 'Invalid path']));
+        }
+
         if (file_exists($destdir . DIRECTORY_SEPARATOR . $fileName)) {
             exit(json_encode(['type' => 'error', 'content' => 'File already exists']));
         }

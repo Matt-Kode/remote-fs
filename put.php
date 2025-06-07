@@ -13,6 +13,10 @@ header("Content-type: application/json");
 $filepath = '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);;
 $content  = $data['content'];
 
+if (!validatePath($filepath)) {
+    exit(json_encode(['type' => 'error', 'content' => 'Invalid path']));
+}
+
 if (!file_exists($filepath)) {
     exit(json_encode(['type' => 'error', 'content' => 'File no longer exists']));
 }
@@ -22,10 +26,6 @@ $currentcontent = file_get_contents($filepath);
 if (empty($content)) {
     file_put_contents($filepath, '');
     exit(json_encode(['type' => 'success', 'content' => 'Successfully saved file', 'old_file_content' => $currentcontent]));
-}
-
-if (isset($data['old_content']) && $currentcontent != $data['old_content']) {
-        exit(json_encode(['type' => 'conflict']));
 }
 
 if ($currentcontent === $content) {

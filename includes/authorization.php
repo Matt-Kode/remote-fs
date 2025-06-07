@@ -1,7 +1,9 @@
 <?php
 require_once ('config.php');
-Class Authorization {
-    public static function baseUser(): bool {
+Class Authorization
+{
+    public static function baseUser(): bool
+    {
 
         if (!self::checkHeader()) {
             return false;

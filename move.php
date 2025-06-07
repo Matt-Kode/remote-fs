@@ -11,6 +11,10 @@ header("Content-Type: application/json");
 $filepath = (str_starts_with($data['filepath'], 'deleted_files') ? '' : '..') . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);
 $destination = $data['destination'] === 'deleted_files' ? $data['destination'] : '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['destination']);
 
+if (!validatePath($filepath)) {
+    exit(json_encode(['type' => 'error', 'content' => 'Invalid path']));
+}
+
 if (moveFile($filepath, $destination)) {
     exit(json_encode(['type' => 'success', 'content' => 'Successfully completed operation']));
 }

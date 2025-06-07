@@ -12,33 +12,15 @@ header("Content-type: application/json");
 
 $filepath = '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);
 
+if (!validatePath($filepath)) {
+    exit(json_encode(['type' => 'error', 'content' => 'Invalid path']));
+}
+
 if (is_file($filepath)) {
-    $fileextension = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
-    switch ($fileextension) {
-        case 'yml':
-            exit (json_encode(['type' => 'file', 'extension' => 'yaml', 'content' => file_get_contents($filepath)]));
-        case 'json':
-            exit (json_encode(['type' => 'file', 'extension' => 'json', 'content' => file_get_contents($filepath)]));
-        case 'js':
-            exit (json_encode(['type' => 'file', 'extension' => 'javascript', 'content' => file_get_contents($filepath)]));
-        case 'php':
-            exit (json_encode(['type' => 'file', 'extension' => 'php', 'content' => file_get_contents($filepath)]));
-        case 'py':
-            exit (json_encode(['type' => 'file', 'extension' => 'python', 'content' => file_get_contents($filepath)]));
-        case 'java':
-            exit (json_encode(['type' => 'file', 'extension' => 'java', 'content' => file_get_contents($filepath)]));
-        case 'css':
-            exit(json_encode(['type' => 'file', 'extension' => 'css', 'content' => file_get_contents($filepath)]));
-        case 'html':
-            exit(json_encode(['type' => 'file', 'extension' => 'html', 'content' => file_get_contents($filepath)]));
-        default:
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mimetype = finfo_file($finfo, $filepath);
-            finfo_close($finfo);
-            if (strpos($mimetype, 'text') !== false || $mimetype === 'application/x-empty') {
-                exit (json_encode(['type' => 'file', 'extension' => 'text', 'content' => file_get_contents($filepath)]));
-            }
-            exit (json_encode(['type' => 'not_viewable', 'extension' => $fileextension]));
+    if (editableFile($filepath)) {
+        exit (json_encode(['type' => 'file', 'content' => file_get_contents($filepath)]));
+    } else {
+        exit (json_encode(['type' => 'not_viewable']));
     }
 }
 
@@ -47,6 +29,9 @@ if ($dir = scandir($filepath)) {
     $subdirs = [];
     $count = 0;
     foreach ($dir as $file) {
+        if ($filepath == '..' . DIRECTORY_SEPARATOR && $file == 'remote') {
+            continue;
+        }
         if ($file == '.' || $file == '..') {
             continue;
         }
@@ -54,7 +39,11 @@ if ($dir = scandir($filepath)) {
             $subdirs[$count] = ['type' => 'dir', 'name' => $file];
         } else {
             $filesize  = ceil(filesize($filepath . DIRECTORY_SEPARATOR . $file) / 1024) . ' Kb';
-            $files[$count] = ['type' => 'file', 'name' => $file, 'size' => $filesize];
+            if (editableFile($filepath . DIRECTORY_SEPARATOR . $file)) {
+                $files[$count] = ['type' => 'file', 'name' => $file, 'size' => $filesize];
+            } else {
+                $files[$count] = ['type' => 'not_viewable', 'name' => $file, 'size' => $filesize];
+            }
         }
         $count++;
     }
@@ -62,4 +51,3 @@ if ($dir = scandir($filepath)) {
     exit(json_encode(['type' => 'dir', 'content' => $allfiles]));
 }
 json_encode(['type' => 'error', 'content' => 'File or directory not found.']);
-

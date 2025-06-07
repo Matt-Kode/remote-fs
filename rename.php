@@ -13,6 +13,9 @@ header('Content-type: application/json');
 $filepath = '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);
 $newfilename = $data['newfilename'];
 
+if (!validateFilename($newfilename)) {
+    exit(json_encode(['type' => 'error', 'content' => 'Invalid filename']));
+}
 
 if (rename($filepath, getLastFolder($filepath) . DIRECTORY_SEPARATOR . $newfilename)) {
     exit(json_encode(['type' => 'success', 'content' => 'File successfully renamed']));

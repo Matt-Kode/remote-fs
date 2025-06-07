@@ -12,6 +12,10 @@ header('Content-type: application/json');
 
 $filepath = '..' . str_replace('/', DIRECTORY_SEPARATOR, $data['filepath']);
 
+if (!validatePath($filepath)) {
+    exit(json_encode(['type' => 'error', 'content' => 'Invalid path']));
+}
+
 if (recursiveDelete($filepath)) {
     exit(json_encode(['type' => 'success', 'content' => 'File successfully deleted']));
 } else {
