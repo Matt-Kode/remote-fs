@@ -134,7 +134,7 @@ function editableFile($filepath) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mimetype = finfo_file($finfo, $filepath);
     finfo_close($finfo);
-    if (strpos($mimetype, 'text') !== false || $mimetype === 'application/x-empty') {
+    if (strpos($mimetype, 'text') !== false || $mimetype === 'application/x-empty' || $mimetype === 'application/json') {
         return true;
     }
     return false;
