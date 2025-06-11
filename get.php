@@ -29,7 +29,7 @@ if ($dir = scandir($filepath)) {
     $subdirs = [];
     $count = 0;
     foreach ($dir as $file) {
-        if ($filepath == '..' . DIRECTORY_SEPARATOR && $file == 'remote') {
+        if ($filepath == '..' . DIRECTORY_SEPARATOR && $file == 'remote-fs') {
             continue;
         }
         if ($file == '.' || $file == '..') {

@@ -124,7 +124,7 @@ function moveFile(String $source, String $destination) : bool {
 }
 
 function validatePath($filepath) : bool {
-    if (str_starts_with($filepath, '..' . DIRECTORY_SEPARATOR  . 'remote')) {
+    if (str_starts_with($filepath, '..' . DIRECTORY_SEPARATOR  . 'remote-fs')) {
         return false;
     }
     return true;
