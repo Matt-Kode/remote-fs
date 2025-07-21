@@ -54,7 +54,7 @@ function getLastFolder(String $currentpath) : String {
     $currentpatharray = array_filter(explode(DIRECTORY_SEPARATOR, $currentpath));
     $counter = 1;
     $newfilepath = '..';
-    while ($counter < count($currentpatharray) - 2) {
+    while ($counter < count($currentpatharray) - 1) {
         $newfilepath .= DIRECTORY_SEPARATOR . $currentpatharray[$counter];
         $counter++;
     }
