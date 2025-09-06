@@ -22,6 +22,10 @@ if (!validateFilename($filename)) {
     exit(json_encode(['type' => 'error', 'content' => 'Invalid filename']));
 }
 
+if ($filepath === '..' . DIRECTORY_SEPARATOR) {
+    $filepath = '..';
+}
+
 if ($filetype === 'dir') {
     if (is_dir($filepath . DIRECTORY_SEPARATOR . $filename)) {
         exit(json_encode(['type' => 'error', 'content' => 'Directory already exists']));
